@@ -25,7 +25,7 @@ ubuntu:
   packages:
     - hdparm
     - htop
-    - intel-gpu-tools
+    # - intel-gpu-tools
     - ipvsadm
     - lm-sensors
     - nano
