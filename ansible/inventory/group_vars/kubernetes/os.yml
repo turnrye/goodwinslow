@@ -35,3 +35,4 @@ ubuntu:
     - python3-yaml
   additional:
     - nfs-common
+    - open-iscsi
