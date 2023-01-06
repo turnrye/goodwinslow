@@ -1,0 +1,38 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: node-feature-discovery
+  namespace: &namespace kube-system
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: node-feature-discovery
+      version: 0.12.0
+      sourceRef:
+        kind: HelmRepository
+        name: node-feature-discovery
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # https://github.com/kubernetes-sigs/node-feature-discovery/blob/f247fcab1fad83abac16662343ce32b239bef983/deployment/helm/node-feature-discovery/values.yaml
+    worker:
+      config:
+        usb:
+          deviceClassWhitelist:
+            - "0e"
+            - "ef"
+            - "fe"
+            - "ff"
+            - "02"
+          deviceLabelFields:
+            - "class"
+            - "vendor"
+            - "device"
