@@ -1,0 +1,85 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: jellyfin
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: jellyfin
+      version: 9.5.3
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # https://github.com/k8s-at-home/charts/blob/master/charts/stable/jellyfin/values.yaml
+    image:
+      repository: jellyfin/jellyfin
+      tag: 10.8.8
+    service:
+      main:
+        type: NodePort
+        enabled: true
+    # https://docs.k8s-at-home.com/our-helm-charts/common-library-storage/?h=persistence#nfs-volume
+    persistence:
+      config:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/jellyfin-config
+        readOnly: false
+      media:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/media
+        readOnly: false
+    # nodeSelector:
+    #   kubernetes.io/arch: amd64
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hosts:
+          - host: &host "jellyfin.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: jellyfin-tls
+    podSecurityContext:
+      # Hardware acceleration using an Intel iGPU w/ QuickSync
+      # These IDs below should be matched to your `video` and `render` group on the host
+      # To obtain those IDs run the following grep statement on the host:
+      # $ cat /etc/group | grep "video\|render"
+      # video:x:44:
+      # render:x:109:
+      supplementalGroups:
+        - 44
+        - 110
+    resources:
+      requests:
+        # gpu.intel.com/i915: 1
+        memory: 1.5Gi
+        cpu: 1000m
+      limits:
+        # gpu.intel.com/i915: 1
+        memory: 3Gi
+        cpu: 2000m
