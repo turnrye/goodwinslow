@@ -1,0 +1,20 @@
+---
+- hosts:
+    - master
+    - worker
+  become: true
+  gather_facts: true
+  any_errors_fatal: true
+  pre_tasks:
+    - name: Pausing for 5 seconds...
+      ansible.builtin.pause:
+        seconds: 5
+  tasks:
+    - name: Packages | Ubuntu
+      block:
+        - name: Packages | Install required packages
+          ansible.builtin.apt:
+            name: "{{ ubuntu.additional | default([]) }}"
+            state: present
+            update_cache: true
+      when: ansible_facts['distribution'] == 'Ubuntu'
