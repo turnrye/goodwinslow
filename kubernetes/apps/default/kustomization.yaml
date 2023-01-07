@@ -9,6 +9,10 @@ resources:
   - ./hajimari/ks.yaml
   - ./home-assistant/ks.yaml
   - ./jellyfin/ks.yaml
+  - ./lidarr/ks.yaml
   - ./nzbget/ks.yaml
   - ./prowlarr/ks.yaml
+  - ./radarr/ks.yaml
+  - ./readarr/ks.yaml
   - ./rtl433/ks.yaml
+  - ./sonarr/ks.yaml
