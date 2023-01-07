@@ -1,0 +1,75 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: prowlarr
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: prowlarr
+      version: 4.5.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # https://github.com/k8s-at-home/charts/blob/master/charts/stable/nzbget/values.yaml
+    env:
+      TZ: America/Chicago
+    image:
+      repository: ghcr.io/onedr0p/prowlarr-develop #https://github.com/onedr0p/containers/blob/main/apps/prowlarr-develop/Dockerfile
+      tag: "1.0.0.2171@sha256:2453e489b2354c028bd3d17030697b18a0ec18632618220288118b7312185c2e"
+      pullPolicy: IfNotPresent
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: "{{ .Release.Name }}-tls"
+    initContainers:
+      update-volume-permission:
+        image: busybox
+        command: ["sh", "-c", "chown -R 568:568 /config"]
+        volumeMounts:
+          - name: config
+            mountPath: /config
+        securityContext:
+          runAsUser: 0
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        existingClaim: prowlarr-config
+    resources:
+      requests:
+        memory: 350Mi
+        cpu: 25m
+      limits:
+        memory: 500Mi
+    nodeSelector:
+      kubernetes.io/arch: arm64
+    metrics:
+      enabled: true
+      prometheusRule:
+        enabled: true
