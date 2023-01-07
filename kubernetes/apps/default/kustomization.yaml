@@ -7,3 +7,4 @@ resources:
   - ./emqx/ks.yaml
   - ./hajimari/ks.yaml
   - ./jellyfin/ks.yaml
+  - ./rtl433/ks.yaml
