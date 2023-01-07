@@ -31,7 +31,7 @@ spec:
       repository: homeassistant/home-assistant
       tag: 2023.1.1
     env:
-      TZ: "America/New_York"
+      TZ: "America/Chicago"
     ingress:
       main:
         enabled: true
@@ -57,60 +57,60 @@ spec:
         server: 10.0.8.240
         path: /volume1/home-assistant
         readOnly: false
-      usb:
-        enabled: true
-        type: hostPath
-        hostPath: /dev/serial/by-id/usb-0658_0200-if00
-      zwjsconfig:
-        enabled: true
-        type: nfs
-        server: 10.0.8.240
-        path: /volume1/zwjsconfig
-        readOnly: false
-    metrics:
-      enabled: true
-      prometheusRule:
-        enabled: true
-      serviceMonitor:
-        interval: 2m
-        bearerTokenSecret:
-          name: home-assistant
-          key: prometheustoken
+      # usb:
+      #   enabled: true
+      #   type: hostPath
+      #   hostPath: /dev/serial/by-id/usb-0658_0200-if00
+      # zwjsconfig:
+      #   enabled: true
+      #   type: nfs
+      #   server: 10.0.8.240
+      #   path: /volume1/zwjsconfig
+      #   readOnly: false
+    # metrics:
+    #   enabled: true
+    #   prometheusRule:
+    #     enabled: true
+    #   serviceMonitor:
+    #     interval: 2m
+    #     bearerTokenSecret:
+    #       name: home-assistant
+    #       key: prometheustoken
     # secret:
     #   prometheustoken: {{ requiredEnv "PROMETHEUS_HASS_TOKEN" | quote }}
-    nodeSelector:
-      feature.node.kubernetes.io/usb-02_0658_0200.present: 'true' # Require the aeotec z-stick gen5
-    additionalContainers:
-      zwavejsui:
-        image: zwavejs/zwave-js-ui:8.6.2
-        name: zwavejsui
-        ports:
-          - containerPort: 3000
-            name: wszw
-          - containerPort: 8091
-            name: httpzw
-        volumeMounts:
-          - name: usb
-            mountPath: /dev/zwave
-          - name: zwjsconfig
-            mountPath: /usr/src/app/store
-        securityContext:
-          privileged: true
-    service:
-      main:
-        type: LoadBalancer
-      httpzw:
-        type: LoadBalancer
-        enabled: true
-        ports:
-          httpzw:
-            enabled: true
-            protocol: TCP
-            port: 8091
-      wszw:
-        enabled: true
-        ports:
-          wszw:
-            enabled: true
-            protocol: TCP
-            port: 3000
+    # nodeSelector:
+    #   feature.node.kubernetes.io/usb-02_0658_0200.present: 'true' # Require the aeotec z-stick gen5
+    # additionalContainers:
+    #   zwavejsui:
+    #     image: zwavejs/zwave-js-ui:8.6.2
+    #     name: zwavejsui
+    #     ports:
+    #       - containerPort: 3000
+    #         name: wszw
+    #       - containerPort: 8091
+    #         name: httpzw
+    #     volumeMounts:
+    #       - name: usb
+    #         mountPath: /dev/zwave
+    #       - name: zwjsconfig
+    #         mountPath: /usr/src/app/store
+    #     securityContext:
+    #       privileged: true
+    # service:
+    #   main:
+    #     type: LoadBalancer
+    #   httpzw:
+    #     type: LoadBalancer
+    #     enabled: true
+    #     ports:
+    #       httpzw:
+    #         enabled: true
+    #         protocol: TCP
+    #         port: 8091
+    #   wszw:
+    #     enabled: true
+    #     ports:
+    #       wszw:
+    #         enabled: true
+    #         protocol: TCP
+    #         port: 3000
