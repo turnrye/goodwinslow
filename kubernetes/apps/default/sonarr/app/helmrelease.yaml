@@ -60,7 +60,7 @@ spec:
       config:
         enabled: true
         type: pvc
-        existingClaim: radarr-config
+        existingClaim: sonarr-config
       media:
         enabled: true
         type: nfs
