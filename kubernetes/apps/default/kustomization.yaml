@@ -5,6 +5,7 @@ resources:
   - ./namespace.yaml
   - ./echo-server/ks.yaml
   - ./emqx/ks.yaml
+  - ./esphome/ks.yaml
   - ./hajimari/ks.yaml
   - ./jellyfin/ks.yaml
   - ./rtl433/ks.yaml
