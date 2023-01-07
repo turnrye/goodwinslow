@@ -1,0 +1,88 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: lidarr
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: lidarr
+      version: 14.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # https://github.com/k8s-at-home/charts/blob/master/charts/stable/nzbget/values.yaml
+    env:
+      TZ: America/Chicago
+    image:
+      repository: ghcr.io/onedr0p/lidarr #https://github.com/onedr0p/containers/blob/main/apps/lidarr/Dockerfile
+      tag: "1.0.2.2592@sha256:1ce91061aeb75f3a6443f325e06872b9b3e88fcaee85abc950f0c67cdc14910e"
+      pullPolicy: IfNotPresent
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+          hajimari.io/enable: "false"
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: "{{ .Release.Name }}-tls"
+    initContainers:
+      update-volume-permission:
+        image: busybox
+        command: ["sh", "-c", "chown -R 568:568 /config"]
+        volumeMounts:
+          - name: config
+            mountPath: /config
+        securityContext:
+          runAsUser: 0
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        existingClaim: lidarr-config
+      media:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/media
+        readOnly: false
+      downloads:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/downloads
+        readOnly: false
+    resources:
+      requests:
+        memory: 350Mi
+        cpu: 500m
+      limits:
+        memory: 500Mi
+        cpu: 2000m
+    nodeSelector:
+      kubernetes.io/arch: arm64
+    metrics:
+      enabled: true
+      prometheusRule:
+        enabled: true
