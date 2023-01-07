@@ -10,4 +10,5 @@ resources:
   - ./home-assistant/ks.yaml
   - ./jellyfin/ks.yaml
   - ./nzbget/ks.yaml
+  - ./prowlarr/ks.yaml
   - ./rtl433/ks.yaml
