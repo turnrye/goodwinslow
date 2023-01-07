@@ -19,4 +19,4 @@ spec:
       namespace: default
   interval: 30m
   retryInterval: 1m
-  timeout: 350Mi
+  timeout: 3m
