@@ -1,0 +1,78 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nzbget
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: nzbget
+      version: 12.4.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # https://github.com/k8s-at-home/charts/blob/master/charts/stable/nzbget/values.yaml
+    env:
+      TZ: America/Chicago
+    image:
+      repository: ghcr.io/onedr0p/nzbget # https://github.com/onedr0p/containers/blob/main/apps/nzbget/Dockerfile
+      tag: "21.1@sha256:4735c87fbc75b781039c958292c485b31078fc886e682b641b86fc09e3621956"
+      pullPolicy: IfNotPresent
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          nginx.ingress.kubernetes.io/whitelist-source-range: |
+            10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: "{{ .Release.Name }}-tls"
+    persistence:
+      config:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/nzbget-config
+        readOnly: false
+      media:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/media
+        readOnly: false
+      downloads:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/downloads
+        readOnly: false
+    metrics:
+      enabled: true
+      prometheusRule:
+        enabled: true
+    resources:
+      requests:
+        memory: 0.3Gi
+        cpu: 1000m
+      limits:
+        memory: 0.5Gi
+        cpu: 2000m
