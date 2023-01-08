@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: frigate-data
+spec:
+  capacity:
+    storage: 500Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  iscsi:
+    targetPortal: 10.0.8.240:3260
+    iqn: iqn.2000-01.com.synology:diskstation.Target-13.01bf470ad83
+    lun: 1
+    chapAuthSession: false
+    fsType: ext4
+    readOnly: false
+  storageClassName: ""
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: frigate-data
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: ""
+  volumeMode: Filesystem
+  volumeName: frigate-data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: frigate-media
+spec:
+  capacity:
+    storage: 500Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.8.240
+    path: /volume1/media
+  storageClassName: ""
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: frigate-media
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  volumeName: frigate-media
+  storageClassName: ""
