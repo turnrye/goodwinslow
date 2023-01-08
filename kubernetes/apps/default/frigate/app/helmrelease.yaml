@@ -33,7 +33,7 @@ spec:
       enabled: false
       hostPath: /dev/bus/usb
     ingress:
-      enabled: true
+      enabled: false
       annotations:
         kubernetes.io/ingress.class: "nginx"
         cert-manager.io/cluster-issuer: letsencrypt-production
