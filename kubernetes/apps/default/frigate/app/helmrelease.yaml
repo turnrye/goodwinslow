@@ -1,0 +1,118 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: frigate
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: frigate
+      version: 7.0.0
+      sourceRef:
+        kind: HelmRepository
+        name: blakeblackshear
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    env:
+      TZ: America/Chicago
+    strategyType: Recreate
+    image:
+      repository: blakeblackshear/frigate
+      tag: 0.11.1
+      pullPolicy: IfNotPresent
+    coral:
+      enabled: false
+      hostPath: /dev/bus/usb
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "nginx"
+        cert-manager.io/cluster-issuer: letsencrypt-production
+        nginx.ingress.kubernetes.io/whitelist-source-range: |
+          10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+      hosts:
+        - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+          paths:
+            - "/"
+      tls:
+        - hosts:
+            - *host
+          secretName: "{{ .Release.Name }}-tls"
+    config: |
+      detectors:
+        coral:
+          type: edgetpu
+          device: usb
+        # cpu1:
+        #   type: cpu
+        #   num_threads: 2
+      database:
+        path: /data/frigate.db
+      objects:
+        track:
+          - person
+      mqtt:
+        host: emqx.default.svc.cluster.local
+        port: 1883
+      record:
+        enabled: True
+        retain:
+          days: 14
+          mode: motion
+        events:
+          retain:
+            default: 10
+      snapshots:
+        enabled: True
+      birdseye:
+        enabled: True
+        mode: continuous
+      cameras:
+        driveway:
+          ffmpeg:
+            inputs:
+              - path: rtsp://10.0.8.234:554/s2
+                roles:
+                  - rtmp
+                  - detect
+              - path: rtsp://10.0.8.234:554/s0
+                roles:
+                  - record
+          detect:
+            width: 1024
+            height: 576
+    nodeSelector:
+      feature.node.kubernetes.io/usb-fe_1a6e_089a.present: 'true' # Require the coral tpu
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1024Mi
+      requests:
+        cpu: 1000m
+        memory: 128Mi
+    persistence:
+      data:
+        enabled: true
+        existingClaim: frigate-data
+    extraVolumes:
+      - name: media
+        persistentVolumeClaim:
+          claimName: frigate-media
+      - name: cache
+        emptyDir:
+          medium: Memory
+    extraVolumeMounts:
+      - mountPath: /media
+        name: media
+        subPath: frigate
+      - mountPath: /tmp/cache
+        name: cache
