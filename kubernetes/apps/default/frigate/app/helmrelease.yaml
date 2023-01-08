@@ -49,12 +49,12 @@ spec:
           secretName: "{{ .Release.Name }}-tls"
     config: |
       detectors:
-        coral:
-          type: edgetpu
-          device: usb
-        # cpu1:
-        #   type: cpu
-        #   num_threads: 2
+        # coral:
+        #   type: edgetpu
+        #   device: usb
+        cpu1:
+          type: cpu
+          num_threads: 2
       database:
         path: /data/frigate.db
       objects:
@@ -90,8 +90,8 @@ spec:
           detect:
             width: 1024
             height: 576
-    nodeSelector:
-      feature.node.kubernetes.io/usb-fe_1a6e_089a.present: 'true' # Require the coral tpu
+    # nodeSelector:
+    #   feature.node.kubernetes.io/usb-fe_1a6e_089a.present: 'true' # Require the coral tpu
     resources:
       limits:
         cpu: 2000m
