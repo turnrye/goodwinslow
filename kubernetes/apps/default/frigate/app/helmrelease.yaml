@@ -49,19 +49,17 @@ spec:
           secretName: "{{ .Release.Name }}-tls"
     config: |
       detectors:
-        # coral:
-        #   type: edgetpu
-        #   device: usb
-        cpu1:
-          type: cpu
-          num_threads: 2
+        coral:
+          type: edgetpu
+          device: usb
+        # cpu1:
+        #   type: cpu
+        #   num_threads: 2
       database:
         path: /data/frigate.db
       objects:
         track:
           - person
-          - dog
-          - cat
       mqtt:
         host: emqx.default.svc.cluster.local
         port: 1883
