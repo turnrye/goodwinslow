@@ -64,7 +64,7 @@ spec:
           - dog
           - cat
       mqtt:
-        host: emqx.emqx.svc.cluster.local
+        host: emqx.default.svc.cluster.local
         port: 1883
       record:
         enabled: True
