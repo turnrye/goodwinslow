@@ -83,6 +83,77 @@ resource "cloudflare_record" "ipv4" {
   ttl     = 1
 }
 
+resource "cloudflare_record" "proton_txt" {
+  name    = "@"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "protonmail-verification=6a918468ef518bcb6c85ce9fd7c859459ddaf4a1"
+  proxied = false
+  type    = "TXT"
+  ttl     = 1
+}
+
+resource "cloudflare_record" "proton_mx_1" {
+  name     = "@"
+  zone_id  = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value    = "mail.protonmail.ch"
+  priority = 10
+  proxied  = false
+  type     = "MX"
+  ttl      = 1
+}
+
+resource "cloudflare_record" "proton_mx_2" {
+  name     = "@"
+  zone_id  = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value    = "mailsec.protonmail.ch"
+  priority = 20
+  proxied  = false
+  type     = "MX"
+  ttl      = 1
+}
+
+resource "cloudflare_record" "proton_spf" {
+  name    = "@"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "v=spf1 include:_spf.protonmail.ch mx ~all"
+  proxied = false
+  type    = "TXT"
+  ttl     = 1
+}
+resource "cloudflare_record" "proton_dkim_1" {
+  name    = "protonmail._domainkey"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "protonmail.domainkey.d4d7wdsstkb7btpnkdasjdbdzpxeoydoa4qrvij3wnzwpez4wq5yq.domains.proton.ch"
+  proxied = false
+  type    = "CNAME"
+  ttl     = 1
+}
+resource "cloudflare_record" "proton_dkim_2" {
+  name    = "protonmail2._domainkey"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "protonmail2.domainkey.d4d7wdsstkb7btpnkdasjdbdzpxeoydoa4qrvij3wnzwpez4wq5yq.domains.proton.ch"
+  proxied = false
+  type    = "CNAME"
+  ttl     = 1
+}
+resource "cloudflare_record" "proton_dkim_3" {
+  name    = "protonmail3._domainkey"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "protonmail3.domainkey.d4d7wdsstkb7btpnkdasjdbdzpxeoydoa4qrvij3wnzwpez4wq5yq.domains.proton.ch"
+  proxied = false
+  type    = "CNAME"
+  ttl     = 1
+}
+
+resource "cloudflare_record" "proton_dmarc" {
+  name    = "_dmarc"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "v=DMARC1; p=none"
+  proxied = false
+  type    = "TXT"
+  ttl     = 1
+}
+
 resource "cloudflare_record" "root" {
   name    = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
   zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
