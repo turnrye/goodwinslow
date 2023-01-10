@@ -1,0 +1,47 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: mariadb
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: mariadb
+      version: 11.4.2
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # https://github.com/k8s-at-home/charts/blob/master/charts/stable/home-assistant/values.yaml
+    image:
+      registry: docker.io
+      repository: bitnami/mariadb
+      tag: 10.9.4-debian-11-r16
+      digest: ""
+    auth:
+      rootPassword: "${MARIADB_ROOT_PASSWORD}"
+      username: "mcneil"
+      password: "${MARIADB_MCNEIL_PASSWORD}"
+      database: "mcneil"
+    architecture: standalone
+    primary:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 500Mi
+        limits:
+          cpu: 200m
+          memory: 1000Mi
+      persistence:
+        enabled: true
+        existingClaim: mariadb-config

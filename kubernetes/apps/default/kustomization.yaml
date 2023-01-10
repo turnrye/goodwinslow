@@ -11,6 +11,7 @@ resources:
   - ./home-assistant/ks.yaml
   - ./jellyfin/ks.yaml
   - ./lidarr/ks.yaml
+  - ./mariadb/ks.yaml
   - ./nzbget/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
