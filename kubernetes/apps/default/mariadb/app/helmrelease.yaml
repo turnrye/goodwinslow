@@ -29,9 +29,9 @@ spec:
       tag: 10.9.4-debian-11-r16
       digest: ""
     auth:
-      rootPassword: {{ requiredEnv "MARIADB_ROOT_PASSWORD" | quote }} # TODO: fix this
+      rootPassword: "${MARIADB_ROOT_PASSWORD}"
       username: "mcneil"
-      password: {{ requiredEnv "MARIADB_MCNEIL_PASSWORD" | quote }} # TODO: fix this
+      password: "${MARIADB_MCNEIL_PASSWORD}"
       database: "mcneil"
     architecture: standalone
     primary:
