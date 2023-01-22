@@ -29,7 +29,7 @@ spec:
         memory: 1Gi
     image:
       repository: homeassistant/home-assistant
-      tag: 2023.1.4
+      tag: 2023.1.7
     nodeSelector:
       feature.node.kubernetes.io/usb-ff_10c4_ea60.present: 'true' # Require the Home Assistant SkyConnect
     env:
