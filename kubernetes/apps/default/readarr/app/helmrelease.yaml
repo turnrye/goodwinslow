@@ -27,7 +27,7 @@ spec:
       TZ: America/Chicago
     image:
       repository: ghcr.io/onedr0p/readarr-develop #https://github.com/onedr0p/containers/blob/main/apps/sonarr/Dockerfile
-      tag: "0.1.1.1526@sha256:d3ce52c0e78e65eb01c02f4c1de3a9ee6601093cc324a693015489eba2dd8cd3"
+      tag: "0.1.2.1558@sha256:aeb38b1ac56810a8ea2cf135c8d1f08488b66ea1363ea6ccd74ec6255ac50244"
       pullPolicy: IfNotPresent
     ingress:
       main:
