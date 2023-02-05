@@ -25,7 +25,7 @@ spec:
     # https://github.com/k8s-at-home/charts/blob/master/charts/stable/jellyfin/values.yaml
     image:
       repository: jellyfin/jellyfin
-      tag: 10.8.8
+      tag: 10.8.9
     service:
       main:
         type: NodePort
