@@ -27,7 +27,7 @@ spec:
       TZ: America/Chicago
     image:
       repository: ghcr.io/onedr0p/prowlarr-develop #https://github.com/onedr0p/containers/blob/main/apps/prowlarr-develop/Dockerfile
-      tag: "1.1.1.2377@sha256:7a7555f9a9630b63bbda3e01cdb9915ae2cffcdad51ab0026c461a25be727627"
+      tag: "1.1.3.2521@sha256:a59831496ad573c57444958b5b9f7265e9c97ddd721d13b28b3a639c0f6c10e7"
       pullPolicy: IfNotPresent
     ingress:
       main:
