@@ -1,0 +1,122 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: home-assistant
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: home-assistant
+      version: 13.4.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # https://github.com/k8s-at-home/charts/blob/master/charts/stable/home-assistant/values.yaml
+    resources:
+      requests:
+        cpu: 100m
+        memory: 1Gi
+    image:
+      repository: homeassistant/home-assistant
+      tag: 2023.1.4
+    nodeSelector:
+      feature.node.kubernetes.io/usb-ff_10c4_ea60.present: 'true' # Require the Home Assistant SkyConnect
+    env:
+      TZ: "America/Chicago"
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/icon: home
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+            secretName: home-assistant-tls
+    persistence:
+      config:
+        enabled: true
+        type: nfs
+        server: 10.0.8.240
+        path: /volume1/home-assistant
+        readOnly: false
+      usb:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/serial/by-id/usb-Nabu_Casa_SkyConnect_v1.0_0a601e6e4bedec11b79a4340ad51a8b2-if00-port0
+      # usb:
+      #   enabled: true
+      #   type: hostPath
+      #   hostPath: /dev/serial/by-id/usb-0658_0200-if00
+      # zwjsconfig:
+      #   enabled: true
+      #   type: nfs
+      #   server: 10.0.8.240
+      #   path: /volume1/zwjsconfig
+      #   readOnly: false
+    # metrics:
+    #   enabled: true
+    #   prometheusRule:
+    #     enabled: true
+    #   serviceMonitor:
+    #     interval: 2m
+    #     bearerTokenSecret:
+    #       name: home-assistant
+    #       key: prometheustoken
+    # secret:
+    #   prometheustoken: {{ requiredEnv "PROMETHEUS_HASS_TOKEN" | quote }}
+    # nodeSelector:
+    #   feature.node.kubernetes.io/usb-02_0658_0200.present: 'true' # Require the aeotec z-stick gen5
+    # additionalContainers:
+    #   zwavejsui:
+    #     image: zwavejs/zwave-js-ui:8.6.2
+    #     name: zwavejsui
+    #     ports:
+    #       - containerPort: 3000
+    #         name: wszw
+    #       - containerPort: 8091
+    #         name: httpzw
+    #     volumeMounts:
+    #       - name: usb
+    #         mountPath: /dev/zwave
+    #       - name: zwjsconfig
+    #         mountPath: /usr/src/app/store
+    #     securityContext:
+    #       privileged: true
+    # service:
+    #   main:
+    #     type: LoadBalancer
+    #   httpzw:
+    #     type: LoadBalancer
+    #     enabled: true
+    #     ports:
+    #       httpzw:
+    #         enabled: true
+    #         protocol: TCP
+    #         port: 8091
+    #   wszw:
+    #     enabled: true
+    #     ports:
+    #       wszw:
+    #         enabled: true
+    #         protocol: TCP
+    #         port: 3000
