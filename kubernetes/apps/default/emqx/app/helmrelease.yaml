@@ -24,7 +24,7 @@ spec:
   values:
     image:
       repository: emqx/emqx
-      tag: 5.0.15
+      tag: 5.0.16
     ingress:
       dashboard:
         enabled: true
