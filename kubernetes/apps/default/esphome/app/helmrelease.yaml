@@ -31,7 +31,7 @@ spec:
         memory: 1Gi
     image:
       repository: esphome/esphome
-      tag: "2022.12.3@sha256:653a69520c4417d131f6231146c6e1fd7642405584bdf6badd9821b5664bcc82"
+      tag: "2022.12.8@sha256:ba03cd1c1829f04e188fbec7fb13f60fa008352d9da0b62e15e4dd8427b3e311"
     ingress:
       main:
         enabled: true
