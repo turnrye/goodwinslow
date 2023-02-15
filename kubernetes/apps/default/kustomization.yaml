@@ -4,11 +4,6 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./echo-server/ks.yaml
-  - ./emqx/ks.yaml
-  - ./esphome/ks.yaml
-  - ./firefly/ks.yaml
-  - ./hajimari/ks.yaml
-  - ./home-assistant/ks.yaml
   - ./jellyfin/ks.yaml
   - ./lidarr/ks.yaml
   - ./mariadb/ks.yaml
@@ -16,5 +11,4 @@ resources:
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./readarr/ks.yaml
-  - ./rtl433/ks.yaml
   - ./sonarr/ks.yaml
