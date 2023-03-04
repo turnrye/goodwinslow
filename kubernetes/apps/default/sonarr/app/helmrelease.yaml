@@ -27,7 +27,7 @@ spec:
       TZ: America/Chicago
     image:
       repository: ghcr.io/onedr0p/sonarr #https://github.com/onedr0p/containers/blob/main/apps/sonarr/Dockerfile
-      tag: "3.0.9.1549@sha256:5eb3e23397054a62d003faef5d4b8a771fd379471714f94f81a02d32107a583d"
+      tag: "3.0.9.1549@sha256:c713e52a6e71d29dcdd38741a4b92384c2911a63a378af1b8e0ebf9f954a0498"
       pullPolicy: IfNotPresent
     ingress:
       main:
