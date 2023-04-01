@@ -12,3 +12,4 @@ resources:
   - ./radarr/ks.yaml
   - ./readarr/ks.yaml
   - ./sonarr/ks.yaml
+  - ./ocis/ks.yaml

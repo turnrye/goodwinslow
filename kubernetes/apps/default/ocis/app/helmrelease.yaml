@@ -1,0 +1,94 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: ocis
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: ocis
+      version: 0.2.0
+      sourceRef:
+        kind: GitRepository
+        name: ocis
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: owncloud/ocis
+      tag: "3.0.0-alpha.1"
+      sha: ""
+    externalDomain: &host "ocis.${SECRET_DOMAIN}"
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+        external-dns.alpha.kubernetes.io/target: "ipv4.${SECRET_DOMAIN}"
+        external-dns.home.arpa/enabled: "true"
+        hajimari.io/icon: television
+        nginx.ingress.kubernetes.io/proxy-body-size: 1024m
+      hosts:
+        - host: *host
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+          secretName: ocis-tls
+    extraResources:
+      - |
+        apiVersion: monitoring.coreos.com/v1
+        kind: ServiceMonitor
+        metadata:
+          name: ocis-metrics
+        spec:
+          selector:
+            matchLabels:
+              ocis-metrics: enabled
+          endpoints:
+            - port: metrics-debug
+              interval: 60s
+              scrapeTimeout: 30s
+              path: /metrics
+    configRefs:
+      # -- Reference to an existing storage-users config.
+      storageusersConfigRef: "ocis-storage-users"
+      # -- Reference to an existing graph config.
+      graphConfigRef: "ocis-graph"
+    secretRefs:
+      # -- Reference to an existing admin user secret (see ref:Secrets#secrets). Not used if `features.externalUserManagement.enabled` equals `true`.
+      adminUserSecretRef: "ocis-admin-user"
+      # -- Reference to an existing IDP secret (see ref:Secrets#secrets). Not used if `features.externalUserManagement.enabled` equals `true`.
+      idpSecretRef: "ocis-idp-secrets"
+      # -- Reference to an existing JWT secret (see ref:Secrets#secrets).
+      jwtSecretRef: "ocis-jwt-secret"
+      # -- Reference to an existing LDAP certificate authority secret (see ref:Secrets#secrets)
+      ldapCaRef: "ocis-ldap-ca"
+      # -- Reference to an existing LDAP cert secret (see ref:Secrets#secrets). Not used if `features.externalUserManagement.enabled` equals `true`.
+      ldapCertRef: "ocis-ldap-cert"
+      # -- Reference to an existing LDAP bind secret (see ref:Secrets#secrets).
+      ldapSecretRef: "ocis-ldap-bind-secrets"
+      # -- Reference to an existing machine auth api key secret (see ref:Secrets#secrets)
+      machineAuthApiKeySecretRef: "ocis-machine-auth-api-key"
+      # -- Reference to an existing messaging system certificate authority secret (see ref:Secrets#secrets)
+      messagingSystemCaRef: "ocis-messaging-system-ca"
+      # -- Reference to an existing SMTP email server settings secret (see ref:Secrets#secrets). Not used if `features.emailNotifications.enabled` equals `false`.
+      notificationsSmtpSecretRef: "ocis-notifications-smtp-secret"
+      # -- Reference to an existing storage-system JWT secret (see ref:Secrets#secrets)
+      storagesystemJwtSecretRef: "ocis-storage-system-jwt-secret"
+      # -- Reference to an existing storage-system secret (see ref:Secrets#secrets)
+      storagesystemSecretRef: "ocis-storage-system"
+      # -- Reference to an existing thumbnails transfer secret (see ref:Secrets#secrets)
+      thumbnailsSecretRef: "ocis-thumbnails-transfer-secret"
+      # -- Reference to an existing transfer secret (see ref:Secrets#secrets)
+      transferSecretSecretRef: "ocis-transfer-secret"
