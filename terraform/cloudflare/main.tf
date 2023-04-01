@@ -154,11 +154,56 @@ resource "cloudflare_record" "proton_dmarc" {
   ttl     = 1
 }
 
-resource "cloudflare_record" "root" {
+resource "cloudflare_record" "root_github_pages_1" {
   name    = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
   zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
-  value   = "ipv4.${data.sops_file.cloudflare_secrets.data["cloudflare_domain"]}"
-  proxied = true
+  value   = "185.199.108.153"
+  proxied = false
+  type    = "A"
+  ttl     = 1
+}
+
+resource "cloudflare_record" "root_github_pages_2" {
+  name    = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "185.199.109.153"
+  proxied = false
+  type    = "A"
+  ttl     = 1
+}
+
+resource "cloudflare_record" "root_github_pages_3" {
+  name    = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "185.199.110.153"
+  proxied = false
+  type    = "A"
+  ttl     = 1
+}
+
+resource "cloudflare_record" "root_github_pages_4" {
+  name    = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "185.199.111.153"
+  proxied = false
+  type    = "A"
+  ttl     = 1
+}
+
+resource "cloudflare_record" "www_github_pages" {
+  name    = "www"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "turnrye.github.io"
+  proxied = false
   type    = "CNAME"
+  ttl     = 1
+}
+
+resource "cloudflare_record" "nas" {
+  name    = "nas"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = chomp(data.http.ipv4.response_body)
+  proxied = false
+  type    = "A"
   ttl     = 1
 }
