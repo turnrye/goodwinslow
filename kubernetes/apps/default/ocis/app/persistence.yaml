@@ -1,0 +1,112 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ocis-storage-users
+data:
+  storage-uuid: 5C832DE5-4159-41B3-9EB9-8D497386D15B
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ocis-graph
+data:
+  application-id: 53951D51-E4FA-4B4B-B3D9-C8B7E5D7809F
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocis-jwt-secret
+type: Opaque
+data:
+  # how to generate: base64 encode a random string (reasonable long and mixed characters)
+  # example generation command: `tr -cd '[:alnum:],.' < /dev/urandom | fold -w 50 | head -n 1 | base64`
+  jwt-secret: "${OCIS_JWT_SECRET}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocis-machine-auth-api-key
+type: Opaque
+data:
+  # how to generate: base64 encode a random string (reasonable long and mixed characters)
+  # example generation command: `tr -cd '[:alnum:],.' < /dev/urandom | fold -w 50 | head -n 1 | base64`
+  machine-auth-api-key: "${OCIS_MACHINE_AUTH_API_KEY}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocis-storage-system
+type: Opaque
+data:
+  # how to generate: base64 encode a UUID V4
+  # example generation command: `cat /proc/sys/kernel/random/uuid | tr -d '\n' | base64`
+  user-id: "${OCIS_STORAGE_SYSTEM_USER_ID}"
+
+  # how to generate: base64 encode a random string (reasonable long and mixed characters)
+  # example generation command: `tr -cd '[:alnum:],.' < /dev/urandom | fold -w 50 | head -n 1 | base64`
+  api-key: "${OCIS_STORAGE_SYSTEM_API_KEY}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocis-storage-system-jwt-secret
+type: Opaque
+data:
+  # how to generate: base64 encode a random string (reasonable long and mixed characters)
+  # example generation command: `tr -cd '[:alnum:],.' < /dev/urandom | fold -w 50 | head -n 1 | base64`
+  storage-system-jwt-secret: "${OCIS_STORAGE_SYSTEM_JWT_SECRET}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocis-transfer-secret
+type: Opaque
+data:
+  # how to generate: base64 encode a random string (reasonable long and mixed characters)
+  # example generation command: `tr -cd '[:alnum:],.' < /dev/urandom | fold -w 50 | head -n 1 | base64`
+  transfer-secret: "${OCIS_TRANSFER_SECRET}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocis-thumbnails-transfer-secret
+type: Opaque
+data:
+  # how to generate: base64 encode a random string (reasonable long and mixed characters)
+  # example generation command: `tr -cd '[:alnum:],.' < /dev/urandom | fold -w 50 | head -n 1 | base64`
+  thumbnails-transfer-secret: "${OCIS_THUMBNAILS_TRANSFER_SECRET}"
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: sonarr-config
+# spec:
+#   capacity:
+#     storage: 5Gi
+#   volumeMode: Filesystem
+#   accessModes:
+#     - ReadWriteOnce
+#   iscsi:
+#     targetPortal: 10.0.8.240:3260
+#     iqn: iqn.2000-01.com.synology:diskstation.Target-17.01bf470ad83
+#     lun: 1
+#     chapAuthSession: false
+#     fsType: ext4
+#     readOnly: false
+#   storageClassName: ""
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: sonarr-config
+#   namespace: default
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 5Gi
+#   storageClassName: ""
+#   volumeMode: Filesystem
+#   volumeName: sonarr-config
