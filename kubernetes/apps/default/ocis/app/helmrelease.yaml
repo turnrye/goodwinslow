@@ -24,7 +24,7 @@ spec:
   values:
     image:
       repository: owncloud/ocis
-      tag: "3.0.0-alpha.1"
+      tag: "5.0.0-alpha.1"
       sha: ""
     externalDomain: &host "ocis.${SECRET_DOMAIN}"
     ingress:
