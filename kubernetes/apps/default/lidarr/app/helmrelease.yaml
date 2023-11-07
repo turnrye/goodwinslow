@@ -27,7 +27,7 @@ spec:
       TZ: America/Chicago
     image:
       repository: ghcr.io/onedr0p/lidarr #https://github.com/onedr0p/containers/blob/main/apps/lidarr/Dockerfile
-      tag: "1.0.2.2592@sha256:e408bc830cc0389dec8b11e2aae4a12987699bf96c98a46398524b320cea5454"
+      tag: "1.4.5.3639@sha256:76b10a1b528a6994eb1d077643debf0217be0bf784f5144f4a907b4522c5ee63"
       pullPolicy: IfNotPresent
     ingress:
       main:
